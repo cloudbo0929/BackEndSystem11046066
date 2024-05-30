@@ -61,12 +61,14 @@ def delivery_order(request, card_code):
 # 當車送達且拿取後 => 發mqtt給nodeRed => 發此API 改狀態
 @login_required
 @group_required('caregiver')
-def finish_order(request, card_code):
-    patient_id = get_object_or_404(RfidCard, pk=card_code).patient_id
-    order = Order.objects.filter(patient_id=patient_id).order_by('order_time').first()
-    arrived_state = get_object_or_404(OrderState, pk=3)
-    order.orderState = arrived_state
-    order.save()
+def finish_order(request):
+    if request.method == 'POST':
+        card_code = request.POST.get('card_code')
+        patient_id = get_object_or_404(RfidCard, pk=card_code).patient_id
+        order = Order.objects.filter(patient_id=patient_id).order_by('order_time').first()
+        arrived_state = get_object_or_404(OrderState, pk=3)
+        order.orderState = arrived_state
+        order.save()
 
 @login_required
 def cancel_order(request, order_id):
