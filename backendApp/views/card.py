@@ -37,20 +37,18 @@ def add_card(request):
     if request.method == 'POST':
         # 从 POST 数据中获取 card_code
         card_code = request.POST.get('card_code')
-        if card_code:  # 检查 card_code 是否存在
-            create_time = timezone.now()
-            RfidCard.objects.create(card_code=card_code, create_time=create_time)
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "card_updates_group",
-                {
-                    "type": "card.message",
-                    "message": "新卡片已添加"
-                }
-            )
-            return HttpResponse("OK")
-        else:
-            return HttpResponse("Card code is missing", status=400)
+        # if card_code:  # 检查 card_code 是否存在
+        create_time = timezone.now()
+        RfidCard.objects.create(rfidCard_code="14654898", created_time=create_time)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "card_updates_group",
+            {
+                "type": "card.message",
+                "message": "新卡片已添加"
+            }
+        )
+        return HttpResponse("OK")
     return HttpResponse("Invalid request", status=405)
 
 @group_required('caregiver')
